@@ -4,8 +4,10 @@
     using UnityEngine;
 
     [CreateAssetMenu(fileName = "StartingUnits", menuName = "StartingUnits", order = 1)]
-    public class StartingUnits : ScriptableObject
+    public class StartingVariables : ScriptableObject
     {
         public List<UnitsNumber> UnitsNumbers = new List<UnitsNumber>();
+        public List<ResourceNumber> ResourcesNumbers = new List<ResourceNumber>();
+        public List<ConstructNumber> ConstructNumbers = new List<ConstructNumber>();
     }
 }

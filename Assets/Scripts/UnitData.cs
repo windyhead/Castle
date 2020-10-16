@@ -17,7 +17,12 @@
         {
             _units.Remove(unit);
         }
-        
+
+        public Unit[] GetUnits()
+        {
+            return _units.ToArray();
+        }
+
         public Unit[] GetUnits(UnitRank rank)
         {
             List<Unit> foundedUnits = new List<Unit>();

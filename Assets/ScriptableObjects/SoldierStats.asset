@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fa14dfd5cb78eb046adc93ff8bccd67e, type: 3}
-  m_Name: InitsLibrary
+  m_Script: {fileID: 11500000, guid: bf7c3e52dfc4074409a1307278e8f903, type: 3}
+  m_Name: SoldierStats
   m_EditorClassIdentifier: 
-  UnitStats:
-  - {fileID: 11400000, guid: 0cf0957a8c767954fb90d31fa055a26e, type: 2}
-  - {fileID: 11400000, guid: 19d63c8491af099498ae1dc1abff0111, type: 2}
+  rank: 1
+  speed: 10
+  prefab: {fileID: 3766284295826377517, guid: c1cf09c02d5adf74ea1667725fad9fa6, type: 3}

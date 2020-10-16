@@ -8,9 +8,9 @@ namespace BuildACastle
  
      public class UnitManager : MonoBehaviour
      {
-         [SerializeField] private UnitsLibrary _unitsLibrary = default;
+         [SerializeField] private ObjectsLibrary objectsLibrary = default;
          [SerializeField] private UnitData _unitData = default;
-         [SerializeField] private StartingUnits _startingUnits = default;
+         [SerializeField] private StartingVariables startingVariables = default;
 
          private void Awake()
          {
@@ -19,9 +19,9 @@ namespace BuildACastle
 
          private void CreateStartingUnits()
          {
-             foreach (var startingUnit in _startingUnits.UnitsNumbers)
+             foreach (var startingUnit in startingVariables.UnitsNumbers)
              {
-                 foreach (var unit in _unitsLibrary.UnitStats)
+                 foreach (var unit in objectsLibrary.UnitStats)
                  {
                      if (startingUnit.Rank == unit.rank)
                      {
@@ -46,6 +46,11 @@ namespace BuildACastle
              foreach (var unit in units)
                  unit.Move(destination);
              
+         }
+
+         public Unit[] GetUnits()
+         {
+             return _unitData.GetUnits();
          }
      }
  }

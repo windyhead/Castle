@@ -9,11 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 427f6ae6d7654a844a5621939c124757, type: 3}
-  m_Name: StartingUnits
+  m_Script: {fileID: 11500000, guid: 1f7df7f3714ff254fbf0d7a149359e72, type: 3}
+  m_Name: BarracsStats
   m_EditorClassIdentifier: 
-  UnitsNumbers:
-  - Rank: 0
-    Number: 5
-  - Rank: 1
-    Number: 1
+  Type: 1
+  Resources:
+  - Type: 0
+    Number: 2
+  - Type: 1
+    Number: 10
+  Spawn: []
+  prefab: {fileID: 3487130798868914226, guid: d81912362499bc74aa35a9c814ccfed0, type: 3}
