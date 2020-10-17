@@ -7,8 +7,6 @@ namespace BuildACastle
 
     public class Selectable: MonoBehaviour
     {
-        //public Action OnSelected;
-        //public Action OnDeselected;
         [SerializeField] private GameObject selection = default;
 
         private void Awake()

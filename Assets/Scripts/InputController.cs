@@ -2,45 +2,28 @@
 {
     using UnityEngine;
 
-    public enum InputState
-    {
-        Selection,
-        Construction,
-        Rotation
-    }
-
     public class InputController : MonoBehaviour
     {
-        [SerializeField] private SelectionManager _selectionManager = default;
-        [SerializeField] private UnitManager _unitManager = default;
-        [SerializeField] private ConstructionManager _constructionManager = default;
-
-        private const string GroundTag = "ground";
+        [SerializeField] private GameHandler _gameHandler;
         private const string SelectableLayer = "selectable";
-
-        private InputState _state;
-
         private Camera _mainCamera;
-
-        private Vector3 _clickPosition;
-        private Vector3 _releasedPosition;
+        private RaycastHit _hit;
+        
         private Vector3 _mouseClickPosition;
         private Vector3 _mouseReleasedPosition;
-        private Vector3 _mosePosition;
 
-        private float LastPosX;
-        private float LastPosY;
-        private float LastPosZ;
+        private float _lastMousePosX;
+        private float _lastMousePosY;
+        private float _lastMousePosZ;
 
         private void Awake()
         {
             _mainCamera = Camera.main;
-            _state = InputState.Selection;
         }
 
         private void Update()
         {
-            switch (_state)
+            switch (_gameHandler.State)
             {
                 case InputState.Selection:
                 {
@@ -54,117 +37,72 @@
                         SelectionRightMouseClick();
                     break;
                 }
-                case InputState.Construction:
+                default:
                 {
-                    UpdateConstructionPosition();
+                    UpdateMousePosition();
+
                     if (Input.GetMouseButtonDown(0))
-                       ConstructionLeftMouseClick();
-                    if (Input.GetMouseButtonUp(0))
-                        ConstructionLeftMouseRelease();
+                        _gameHandler.ChangeState();
                     break;
                 }
-                case InputState.Rotation:
-                {
-                    UpdateConstructionPosition();
-                    if (Input.GetMouseButtonDown(0))
-                        RotatingLeftMouseClick();
-                    break;
-                }
-                    
             }
         }
 
         private void SelectionLeftMouseClick()
         {
-            Ray ray = _mainCamera.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out var hit, Mathf.Infinity, LayerMask.GetMask(SelectableLayer)))
+            if (RayCastLayer(SelectableLayer))
             {
-                _selectionManager.EnableFrame();
-                _clickPosition = hit.point;
                 _mouseClickPosition = _mainCamera.ScreenToViewportPoint(Input.mousePosition);
-
-                Unit selectedUnit = hit.collider.gameObject.GetComponent<Unit>();
-
-                if (hit.collider.tag == GroundTag)
-                    _selectionManager.Clear();
-
-                else if (selectedUnit != null)
-                {
-                    _selectionManager.Clear();
-                    _selectionManager.Select(new Unit[] {selectedUnit});
-                }
-            }
-        }
-
-        private void SelectionRightMouseClick()
-        {
-            if (_selectionManager.Selected.Count == 0)
-                return;
-            Ray ray = _mainCamera.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out var hit, Mathf.Infinity, LayerMask.GetMask(SelectableLayer)))
-            {
-                if (hit.collider.tag == GroundTag)
-                    _unitManager.MoveUnits(_selectionManager.Selected.ToArray(), hit.point);
+                _gameHandler.DetectSelection(_hit, _mainCamera.WorldToScreenPoint(_hit.point));
             }
         }
 
         private void SelectionLeftMouseHold()
         {
-            _releasedPosition = Input.mousePosition;
-
-            Vector3 frameStart = _mainCamera.WorldToScreenPoint(_clickPosition);
-            frameStart.z = 0f;
-
-            Vector3 centerPosition = (frameStart + _releasedPosition) / 2;
-            float frameSizeX = Mathf.Abs(frameStart.x - _releasedPosition.x);
-            float frameSizeY = Mathf.Abs(frameStart.y - _releasedPosition.y);
-            _selectionManager.UpdateFrame(centerPosition, frameSizeX, frameSizeY);
+            _gameHandler.UpdateFrame(Input.mousePosition);
         }
 
         private void SelectionLeftMouseReleased()
         {
-            _selectionManager.DisableFrame();
             _mouseReleasedPosition = _mainCamera.ScreenToViewportPoint(Input.mousePosition);
-            _selectionManager.Select(_mouseClickPosition, _mouseReleasedPosition, _unitManager.GetUnits());
+            _gameHandler.SelectionFinished(_mouseClickPosition, _mouseReleasedPosition);
         }
 
-        private void ConstructionLeftMouseClick()
+        private void SelectionRightMouseClick()
         {
-            _constructionManager.StartConstruction();
-            _state = InputState.Rotation;
+            if (RayCastLayer(SelectableLayer))
+                _gameHandler.DetectOrder(_hit);
         }
 
-        private void RotatingLeftMouseClick()
+        private void UpdateMousePosition()
         {
-            _constructionManager.UpdateBlueprintRotation(new Vector3(LastPosX,0,LastPosZ));
-        }
-
-        private void ConstructionLeftMouseRelease()
-        {
-             
-              _state = InputState.Construction;
-        }
-
-        private void UpdateConstructionPosition()
-        {
-            _mosePosition = Input.mousePosition;
-            Ray ray = Camera.main.ScreenPointToRay(_mosePosition);
-            RaycastHit hit;
-
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity, LayerMask.GetMask(SelectableLayer)))
+            if (RayCastLayer(SelectableLayer))
             {
-                float PosX = hit.point.x;
-                float PosY = hit.point.y;
-                float PosZ = hit.point.z;
+                float PosX = _hit.point.x;
+                float PosY = _hit.point.y;
+                float PosZ = _hit.point.z;
 
-                if (PosX != LastPosX || PosY != LastPosY || PosZ != LastPosZ)
+                if (PosX != _lastMousePosX || PosY != _lastMousePosY || PosZ != _lastMousePosZ)
                 {
-                    LastPosX = PosX;
-                    LastPosY = PosY;
-                    LastPosZ = PosZ;
-                    _constructionManager.UpdateBlueprintPosition(new Vector3(LastPosX, LastPosY + .5f, LastPosZ));
+                    _lastMousePosX = PosX;
+                    _lastMousePosY = PosY;
+                    _lastMousePosZ = PosZ;
+                    _gameHandler.UpdateMousePosition(_hit, new Vector3(_lastMousePosX, _lastMousePosY, _lastMousePosZ));
                 }
             }
+        }
+
+        private bool RayCastLayer(string layer)
+        {
+            Ray ray = _mainCamera.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit, Mathf.Infinity, LayerMask.GetMask(layer)))
+            {
+                _hit = hit;
+                return true;
+            }
+
+            return false;
         }
     }
 }

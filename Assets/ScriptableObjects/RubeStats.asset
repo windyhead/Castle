@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: RubeStats
   m_EditorClassIdentifier: 
   rank: 0
-  speed: 5
+  speed: 10
   prefab: {fileID: 2920877007376201862, guid: 2a266f79c93f07a4ba7ae9ffe67e96e7, type: 3}

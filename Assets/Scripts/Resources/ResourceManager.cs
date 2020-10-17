@@ -8,7 +8,8 @@
         [SerializeField] private RectTransform _ground = default;
         [SerializeField] private StartingVariables _startingVariables = default;
         [SerializeField] private ObjectsLibrary _objectsLibrary = default;
-        private readonly List<Resource> _resources = new List<Resource>();
+       // private readonly List<Resource> _resources = new List<Resource>();
+        private readonly List<Resource> _unUsedResources = new List<Resource>();
         private readonly List<Vector3> _randomPositions = new List<Vector3>();
 
         private void Awake()
@@ -38,7 +39,7 @@
         {
             int positionsCount = 0;
             foreach (var resource in _startingVariables.ResourcesNumbers)
-                positionsCount = +resource.Number;
+                positionsCount += resource.Number;
             
             for (int i = 0; i < positionsCount; i++)
                 _randomPositions.Add(GenerateRandomPosition());
@@ -51,25 +52,36 @@
             newResource.transform.rotation = Quaternion.Euler(0, Random.Range(0, 360), 0);
 
             _randomPositions.RemoveAt(0);
-            _resources.Add(newResource);
+           // _resources.Add(newResource);
+            _unUsedResources.Add(newResource);
         }
 
-        public Resource[] GetResources
-            (ResourceType type)
+        public Resource[] GetResources(ResourceType type)
         {
+            Debug.Log($"Searching for {type}");
             List<Resource> foundedResources = new List<Resource>();
-            foreach (var resource in _resources)
+            foreach (var resource in _unUsedResources)
             {
                 if (resource.Type == type)
                     foundedResources.Add(resource);
             }
-
+            
             if (foundedResources.Count == 0)
             {
                 Debug.Log($"no units of rank {type} was found");
                 return null;
             }
             return foundedResources.ToArray();
+        }
+        
+        public Resource[] GetResources()
+        {
+            return _unUsedResources.ToArray();
+        }
+
+        public void UseResource(Resource usedResource)
+        {
+            _unUsedResources.Remove(usedResource);
         }
 
         private Vector3 GenerateRandomPosition()

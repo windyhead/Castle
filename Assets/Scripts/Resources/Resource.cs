@@ -11,7 +11,7 @@ namespace BuildACastle
     [RequireComponent(typeof(Collider))]
     public class Resource : MonoBehaviour
     {
-        public ResourceType Type { get; } = default;
+        public ResourceType Type  = default;
         private Collider _collider;
 
         private void Awake()

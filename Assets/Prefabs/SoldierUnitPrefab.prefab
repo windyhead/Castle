@@ -15,7 +15,7 @@ PrefabInstance:
     - target: {fileID: 2636527272847044691, guid: bf95cce0408d8e54288a3a490325e11e,
         type: 3}
       propertyPath: m_Name
-      value: SoldierUnit
+      value: SoldierUnitPrefab
       objectReference: {fileID: 0}
     - target: {fileID: 6111348257643430494, guid: bf95cce0408d8e54288a3a490325e11e,
         type: 3}
@@ -96,6 +96,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Radius
       value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7774955487221453636, guid: bf95cce0408d8e54288a3a490325e11e,
+        type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8784950894910328987, guid: bf95cce0408d8e54288a3a490325e11e,
         type: 3}

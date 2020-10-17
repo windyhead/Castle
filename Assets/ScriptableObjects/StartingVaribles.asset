@@ -14,14 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   UnitsNumbers:
   - Rank: 0
-    Number: 5
+    Number: 0
   - Rank: 1
-    Number: 1
+    Number: 0
   ResourcesNumbers:
   - Type: 0
-    Number: 12
+    Number: 30
   - Type: 1
-    Number: 25
+    Number: 30
   ConstructNumbers:
   - Type: 0
     Number: 1

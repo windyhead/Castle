@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 8003084783427777567}
   - component: {fileID: -2650337441786143824}
   m_Layer: 0
-  m_Name: Wood
+  m_Name: WoodPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -44,8 +44,8 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.5000001
-  m_Height: 2.23
+  m_Radius: 0.91
+  m_Height: 2.7
   m_Direction: 2
   m_Center: {x: 0, y: 0.87, z: 0.13}
 --- !u!114 &8003084783427777567

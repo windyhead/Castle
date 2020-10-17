@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1f7df7f3714ff254fbf0d7a149359e72, type: 3}
-  m_Name: BarracsStats
+  m_Name: BarracksStats
   m_EditorClassIdentifier: 
   Type: 1
   Resources:

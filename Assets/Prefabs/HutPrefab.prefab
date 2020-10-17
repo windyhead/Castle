@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6877454572705529145}
   - component: {fileID: 7899661790322104410}
   - component: {fileID: 1963625824992576364}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: SelectionQuad
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -27,7 +27,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2439616349955197874}
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0.056999773, z: 0}
+  m_LocalPosition: {x: 0, y: 0.03, z: 0}
   m_LocalScale: {x: 3, y: 3, z: 1}
   m_Children: []
   m_Father: {fileID: 2995047595950395710}
@@ -106,7 +106,7 @@ GameObject:
   - component: {fileID: 5531333212095439086}
   - component: {fileID: 9063901383007305636}
   - component: {fileID: 5815959599410034968}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -121,7 +121,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5116147990862437811}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.33699977, z: 0}
+  m_LocalPosition: {x: 0, y: 0.22, z: 0}
   m_LocalScale: {x: 1.43, y: 0.6, z: 1}
   m_Children: []
   m_Father: {fileID: 2995047595950395710}
@@ -199,7 +199,7 @@ GameObject:
   - component: {fileID: 6925483978292360548}
   - component: {fileID: 3885801708507924550}
   - component: {fileID: 7327706234430687608}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RoofQuad
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -214,7 +214,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5239594776806764125}
   m_LocalRotation: {x: 0.38268343, y: 0, z: 0, w: 0.92387956}
-  m_LocalPosition: {x: 0, y: 0.994, z: -0.348}
+  m_LocalPosition: {x: 0, y: 0.8770002, z: -0.348}
   m_LocalScale: {x: 1.8, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2995047595950395710}
@@ -293,7 +293,7 @@ GameObject:
   - component: {fileID: 6145191939903718818}
   - component: {fileID: 3293597708877234380}
   - component: {fileID: 7722143462002731842}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RoofQuad (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -308,7 +308,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5600616437206006192}
   m_LocalRotation: {x: 0.92387956, y: 0, z: 0, w: 0.38268343}
-  m_LocalPosition: {x: 0, y: 0.9939998, z: 0.359}
+  m_LocalPosition: {x: 0, y: 0.877, z: 0.359}
   m_LocalScale: {x: 1.8, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2995047595950395710}
@@ -387,7 +387,8 @@ GameObject:
   - component: {fileID: 4873982901392117328}
   - component: {fileID: 4263801302413983179}
   - component: {fileID: 8802349593895507914}
-  m_Layer: 0
+  - component: {fileID: 8670582476071147821}
+  m_Layer: 8
   m_Name: HutPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -447,9 +448,22 @@ NavMeshObstacle:
   m_Enabled: 1
   serializedVersion: 3
   m_Shape: 1
-  m_Extents: {x: 0.86, y: 0.495, z: 0.5}
+  m_Extents: {x: 0.86, y: 0.62, z: 0.5}
   m_MoveThreshold: 0.1
   m_Carve: 1
   m_CarveOnlyStationary: 1
-  m_Center: {x: 0, y: 0.51, z: 0}
+  m_Center: {x: 0, y: 0.38, z: 0}
   m_TimeToStationary: 0.5
+--- !u!65 &8670582476071147821
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6918986616260516711}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.77, y: 1.36, z: 1}
+  m_Center: {x: 0, y: 0.42, z: 0}

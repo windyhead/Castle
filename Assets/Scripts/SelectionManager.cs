@@ -8,50 +8,73 @@ namespace BuildACastle
     public class SelectionManager : MonoBehaviour
     {
         [SerializeField] private RectTransform _selectionFrame = default;
-        
-        public List<Unit> Selected { get; } = new List<Unit>();
+
+        public List<Unit> SelectedUnits { get; } = new List<Unit>();
+        public Construct SelectedConstruct { get; private set; }
+
+        private Vector3 _frameStart;
+        private Unit selectedUnit;
+        private Construct selectedConstruct;
 
         private void Awake()
         {
-           DisableFrame();
+            DisableFrame();
         }
 
         public void Clear()
         {
-            foreach (var unit in Selected)
+            foreach (var unit in SelectedUnits)
             {
                 unit.Deselected();
             }
 
-            Selected.Clear();
+            if (SelectedConstruct != null)
+            {
+                SelectedConstruct.Deselected();
+                SelectedConstruct = null;
+            }
+
+            SelectedUnits.Clear();
         }
 
         public void Select(Unit[] units)
         {
+            Clear();
             foreach (var unit in units)
             {
                 unit.Selected();
-                Selected.Add(unit);
+                SelectedUnits.Add(unit);
             }
         }
 
-        public void Select(Vector3 firstPosition, Vector3 secondPosition,Unit[] units)
+        public void Select(Construct construct)
         {
-            if (firstPosition==secondPosition)
+            Clear();
+            SelectedConstruct = construct;
+            SelectedConstruct.Selected();
+            Debug.Log("Selected");
+        }
+
+        public void Select(Vector3 firstPosition, Vector3 secondPosition, Unit[] units)
+        {
+            if (firstPosition == secondPosition)
                 return;
-            
+
             List<Unit> newUnits = new List<Unit>();
-            Rect frameRect = new Rect(firstPosition.x,firstPosition.y,secondPosition.x-firstPosition.x,secondPosition.y-firstPosition.y);
+            Rect frameRect = new Rect(firstPosition.x, firstPosition.y, secondPosition.x - firstPosition.x,
+                secondPosition.y - firstPosition.y);
 
             foreach (var unit in units)
-                if (frameRect.Contains(Camera.main.WorldToViewportPoint(unit.transform.position),true))
+                if (frameRect.Contains(Camera.main.WorldToViewportPoint(unit.transform.position), true))
                     newUnits.Add(unit);
 
             Select(newUnits.ToArray());
         }
 
-        public void EnableFrame()
+
+        public void EnableFrame(Vector3 frameStart)
         {
+            _frameStart = frameStart;
             _selectionFrame.gameObject.SetActive(true);
         }
 
@@ -60,10 +83,17 @@ namespace BuildACastle
             _selectionFrame.gameObject.SetActive(false);
         }
 
-        public void UpdateFrame(Vector3 position, float sizeX, float sizeY)
+        public void UpdateFrame(Vector3 mousePosition)
         {
-            _selectionFrame.position = position;
-            _selectionFrame.sizeDelta = new Vector2(sizeX, sizeY);
+            _frameStart.z = 0f;
+
+            Vector3 centerPosition = (_frameStart + mousePosition) / 2;
+            float frameSizeX = Mathf.Abs(_frameStart.x - mousePosition.x);
+            float frameSizeY = Mathf.Abs(_frameStart.y - mousePosition.y);
+            
+            
+            _selectionFrame.position = centerPosition;
+            _selectionFrame.sizeDelta = new Vector2(frameSizeX, frameSizeY);
         }
     }
 }
