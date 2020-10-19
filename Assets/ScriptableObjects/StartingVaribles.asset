@@ -19,9 +19,9 @@ MonoBehaviour:
     Number: 0
   ResourcesNumbers:
   - Type: 0
-    Number: 30
+    Number: 250
   - Type: 1
-    Number: 30
+    Number: 250
   ConstructNumbers:
   - Type: 0
     Number: 1

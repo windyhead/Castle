@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace BuildACastle
+﻿namespace BuildACastle
 {
     using UnityEngine;
     public enum ResourceType
@@ -14,9 +12,6 @@ namespace BuildACastle
         public ResourceType Type  = default;
         private Collider _collider;
 
-        private void Awake()
-        {
-            _collider = GetComponents<Collider>()[0];
-        }
+        private void Awake()=>_collider = GetComponent<Collider>();
     }
 }

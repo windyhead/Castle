@@ -5,11 +5,11 @@
 
     public class ResourceManager : MonoBehaviour
     {
-        [SerializeField] private RectTransform _ground = default;
+        [SerializeField] private Terrain _ground = default;
         [SerializeField] private StartingVariables _startingVariables = default;
         [SerializeField] private ObjectsLibrary _objectsLibrary = default;
-       // private readonly List<Resource> _resources = new List<Resource>();
-        private readonly List<Resource> _unUsedResources = new List<Resource>();
+
+        private readonly List<Resource> _unusedResources = new List<Resource>();
         private readonly List<Vector3> _randomPositions = new List<Vector3>();
 
         private void Awake()
@@ -40,7 +40,7 @@
             int positionsCount = 0;
             foreach (var resource in _startingVariables.ResourcesNumbers)
                 positionsCount += resource.Number;
-            
+
             for (int i = 0; i < positionsCount; i++)
                 _randomPositions.Add(GenerateRandomPosition());
         }
@@ -52,42 +52,38 @@
             newResource.transform.rotation = Quaternion.Euler(0, Random.Range(0, 360), 0);
 
             _randomPositions.RemoveAt(0);
-           // _resources.Add(newResource);
-            _unUsedResources.Add(newResource);
+            _unusedResources.Add(newResource);
         }
 
         public Resource[] GetResources(ResourceType type)
         {
             Debug.Log($"Searching for {type}");
             List<Resource> foundedResources = new List<Resource>();
-            foreach (var resource in _unUsedResources)
+            foreach (var resource in _unusedResources)
             {
                 if (resource.Type == type)
                     foundedResources.Add(resource);
             }
-            
+
             if (foundedResources.Count == 0)
             {
                 Debug.Log($"no units of rank {type} was found");
                 return null;
             }
+
             return foundedResources.ToArray();
-        }
-        
-        public Resource[] GetResources()
-        {
-            return _unUsedResources.ToArray();
         }
 
         public void UseResource(Resource usedResource)
         {
-            _unUsedResources.Remove(usedResource);
+            _unusedResources.Remove(usedResource);
         }
 
         private Vector3 GenerateRandomPosition()
         {
-            var pos = _ground.position + new Vector3(Random.Range(-_ground.rect.size.x / 2, _ground.rect.size.x / 2),
-                          0, Random.Range(-_ground.rect.size.x / 2, _ground.rect.size.x / 2));
+            var xPosition = _ground.transform.position.x + Random.Range(0, _ground.terrainData.size.x);
+            var zPosition = _ground.transform.position.z + Random.Range(0, _ground.terrainData.size.z);
+            var pos = new Vector3(xPosition, _ground.SampleHeight(new Vector3(xPosition, 0, zPosition)), +zPosition);
             return pos;
         }
     }

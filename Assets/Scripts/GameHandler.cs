@@ -14,9 +14,7 @@
         [SerializeField] private SelectionManager _selectionManager = default;
         [SerializeField] private UnitManager _unitManager = default;
         [SerializeField] private ConstructionManager _constructionManager = default;
-
-        private const string GroundTag = "ground";
-
+        
         public InputState State { get; private set; }
 
         private void Awake()
@@ -28,25 +26,27 @@
         {
             Unit selectedUnit = hit.collider.gameObject.GetComponent<Unit>();
             Construct selectedConstruct = hit.collider.gameObject.GetComponent<Construct>();
-
-            if (hit.collider.tag == GroundTag)
-            {
-                _selectionManager.Clear();
-                _selectionManager.EnableFrame(cameraPoint);
-            }
-
-            else if (selectedUnit != null)
+            
+            _selectionManager.EnableFrame(cameraPoint);
+            
+            if (selectedUnit != null)
                 _selectionManager.Select(new Unit[] {selectedUnit});
-
-
+            
             else if (selectedConstruct != null)
                 _selectionManager.Select(selectedConstruct);
+        }
+
+        public void DetectGround(Vector3 cameraPoint)
+        {
+            _selectionManager.Clear();
+            _selectionManager.EnableFrame(cameraPoint);
         }
 
         public void UpdateFrame(Vector3 mousePosition)
         {
             _selectionManager.UpdateFrame(mousePosition);
         }
+
 
         public void SelectionFinished(Vector3 mouseStart, Vector3 mouseReleased)
         {
@@ -60,18 +60,11 @@
             _constructionManager.CreateBlueprint(type);
         }
 
-        public void DetectOrder(RaycastHit hit)
+        public void DetectConstructOrder(RaycastHit hit)
         {
-            Construct orderedConstruct = hit.collider.gameObject.GetComponent<Construct>();
-
-            if (hit.collider.tag == GroundTag)
-            {
-                if (_selectionManager.SelectedUnits.Count == 0)
-                    return;
-                _unitManager.MoveUnits(_selectionManager.SelectedUnits.ToArray(), hit.point);
-            }
-
-            else if (orderedConstruct != null)
+            Construct orderedConstruct = hit.collider.GetComponent<Construct>();
+            
+            if (orderedConstruct != null)
             {
                 if (orderedConstruct.IsReady && orderedConstruct.Stats.Type == ConstructType.Barracks)
                     _unitManager.MoveUnits(_selectionManager.SelectedUnits.ToArray(),
@@ -85,6 +78,13 @@
                         orderedConstruct);
                 }
             }
+        }
+
+        public void DetectGroundOrder(RaycastHit hit)
+        {
+            if (_selectionManager.SelectedUnits.Count == 0)
+                    return;
+                _unitManager.MoveUnits(_selectionManager.SelectedUnits.ToArray(), hit.point);
         }
 
         public void ChangeState()
@@ -105,12 +105,10 @@
 
         public void UpdateMousePosition(RaycastHit hit, Vector3 mousePosition)
         {
+            
             if (State == InputState.Construction)
-            {
-                if (hit.collider.tag != GroundTag)
-                    return;
                 _constructionManager.UpdateBlueprintPosition(mousePosition);
-            }
+            
             else if (State == InputState.Rotation)
                 _constructionManager.UpdateBlueprintRotation(hit.point);
         }

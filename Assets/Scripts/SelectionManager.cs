@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace BuildACastle
+﻿namespace BuildACastle
 {
     using System.Collections.Generic;
     using UnityEngine;
@@ -10,7 +8,7 @@ namespace BuildACastle
         [SerializeField] private RectTransform _selectionFrame = default;
 
         public List<Unit> SelectedUnits { get; } = new List<Unit>();
-        public Construct SelectedConstruct { get; private set; }
+        private Construct SelectedConstruct;
 
         private Vector3 _frameStart;
         private Unit selectedUnit;
@@ -52,7 +50,6 @@ namespace BuildACastle
             Clear();
             SelectedConstruct = construct;
             SelectedConstruct.Selected();
-            Debug.Log("Selected");
         }
 
         public void Select(Vector3 firstPosition, Vector3 secondPosition, Unit[] units)
@@ -74,6 +71,7 @@ namespace BuildACastle
 
         public void EnableFrame(Vector3 frameStart)
         {
+            _selectionFrame.sizeDelta = new Vector2(0, 0);
             _frameStart = frameStart;
             _selectionFrame.gameObject.SetActive(true);
         }
@@ -90,7 +88,6 @@ namespace BuildACastle
             Vector3 centerPosition = (_frameStart + mousePosition) / 2;
             float frameSizeX = Mathf.Abs(_frameStart.x - mousePosition.x);
             float frameSizeY = Mathf.Abs(_frameStart.y - mousePosition.y);
-            
             
             _selectionFrame.position = centerPosition;
             _selectionFrame.sizeDelta = new Vector2(frameSizeX, frameSizeY);

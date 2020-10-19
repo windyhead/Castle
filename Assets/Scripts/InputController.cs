@@ -1,14 +1,20 @@
-﻿namespace BuildACastle
+﻿using UnityEngine.EventSystems;
+
+namespace BuildACastle
 {
     using UnityEngine;
 
     public class InputController : MonoBehaviour
     {
         [SerializeField] private GameHandler _gameHandler;
+        [SerializeField] private EventSystem _eventSystem;
         private const string SelectableLayer = "selectable";
+        private const string GroundLayer = "ground";
+        private const string UILayer = "UI";
+        
         private Camera _mainCamera;
         private RaycastHit _hit;
-        
+
         private Vector3 _mouseClickPosition;
         private Vector3 _mouseReleasedPosition;
 
@@ -29,11 +35,11 @@
                 {
                     if (Input.GetMouseButtonDown(0))
                         SelectionLeftMouseClick();
-                    if (Input.GetMouseButton(0))
+                    else if (Input.GetMouseButton(0))
                         SelectionLeftMouseHold();
-                    if (Input.GetMouseButtonUp(0))
+                    else if (Input.GetMouseButtonUp(0))
                         SelectionLeftMouseReleased();
-                    if (Input.GetMouseButtonDown(1))
+                    else if (Input.GetMouseButtonDown(1))
                         SelectionRightMouseClick();
                     break;
                 }
@@ -55,6 +61,12 @@
                 _mouseClickPosition = _mainCamera.ScreenToViewportPoint(Input.mousePosition);
                 _gameHandler.DetectSelection(_hit, _mainCamera.WorldToScreenPoint(_hit.point));
             }
+
+            else if (RayCastLayer(GroundLayer))
+            {
+                _mouseClickPosition = _mainCamera.ScreenToViewportPoint(Input.mousePosition);
+                _gameHandler.DetectGround(_mainCamera.WorldToScreenPoint(_hit.point));
+            }
         }
 
         private void SelectionLeftMouseHold()
@@ -71,12 +83,14 @@
         private void SelectionRightMouseClick()
         {
             if (RayCastLayer(SelectableLayer))
-                _gameHandler.DetectOrder(_hit);
+                _gameHandler.DetectConstructOrder(_hit);
+            else if (RayCastLayer(GroundLayer))
+                _gameHandler.DetectGroundOrder(_hit);
         }
 
         private void UpdateMousePosition()
         {
-            if (RayCastLayer(SelectableLayer))
+            if (RayCastLayer(GroundLayer) || RayCastLayer(SelectableLayer))
             {
                 float PosX = _hit.point.x;
                 float PosY = _hit.point.y;
@@ -94,10 +108,15 @@
 
         private bool RayCastLayer(string layer)
         {
+            if (_eventSystem.IsPointerOverGameObject())
+                return false;
+
             Ray ray = _mainCamera.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
+
             if (Physics.Raycast(ray, out hit, Mathf.Infinity, LayerMask.GetMask(layer)))
             {
+                Debug.Log(layer);
                 _hit = hit;
                 return true;
             }
