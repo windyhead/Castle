@@ -7,6 +7,7 @@
     public class ConstructStats : ScriptableObject
     {
         public ConstructType Type;
+        public string ConstructName;
         public List<ResourceNumber>  Resources = new List<ResourceNumber>();
         public List<UnitsNumber> Spawn = new List<UnitsNumber>();
         public Construct prefab;

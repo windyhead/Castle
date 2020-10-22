@@ -6,21 +6,16 @@
     public class ResourceManager : MonoBehaviour
     {
         [SerializeField] private Terrain _ground = default;
-        [SerializeField] private StartingVariables _startingVariables = default;
         [SerializeField] private ObjectsLibrary _objectsLibrary = default;
 
         private readonly List<Resource> _unusedResources = new List<Resource>();
         private readonly List<Vector3> _randomPositions = new List<Vector3>();
-
-        private void Awake()
+        
+        public void CreateStartingResources(ResourceNumber[] resourceNumbers)
         {
-            GenerateResourcePositions();
-            CreateStartingResources();
-        }
-
-        private void CreateStartingResources()
-        {
-            foreach (var startingResource in _startingVariables.ResourcesNumbers)
+            GenerateResourcePositions(resourceNumbers);
+            
+            foreach (var startingResource in resourceNumbers)
             {
                 foreach (var resource in _objectsLibrary.Resources)
                 {
@@ -35,10 +30,10 @@
             }
         }
 
-        private void GenerateResourcePositions()
+        private void GenerateResourcePositions(ResourceNumber[] resourceNumbers)
         {
             int positionsCount = 0;
-            foreach (var resource in _startingVariables.ResourcesNumbers)
+            foreach (var resource in resourceNumbers)
                 positionsCount += resource.Number;
 
             for (int i = 0; i < positionsCount; i++)

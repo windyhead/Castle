@@ -13,10 +13,11 @@ MonoBehaviour:
   m_Name: BarracksStats
   m_EditorClassIdentifier: 
   Type: 1
+  ConstructName: "\u041A\u0430\u0437\u0430\u0440\u043C\u0430"
   Resources:
   - Type: 0
-    Number: 2
+    Number: 3
   - Type: 1
-    Number: 10
+    Number: 5
   Spawn: []
-  prefab: {fileID: 3487130798868914226, guid: d81912362499bc74aa35a9c814ccfed0, type: 3}
+  prefab: {fileID: 5270951762305105016, guid: 88de13e5421c880429f3470d89df3828, type: 3}

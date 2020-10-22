@@ -6,39 +6,25 @@
     public class ConstructionManager : MonoBehaviour
     {
         public Action<UnitsNumber[], Vector3> OnHutConstructed;
-        [SerializeField] private StartingVariables _startingVariables = default;
         [SerializeField] private ObjectsLibrary _objectsLibrary = default;
-        [SerializeField] private Construct _blueprintPrefab;
-       
-        private Construct _blueprint;
-
-        private void Start()
+        
+        private Construct _newConstruct;
+        
+        public void CreateStartingConstructs(ConstructNumber[] constructNumbers)
         {
-            CreateStartingConstructs();
-        }
-
-        private void CreateStartingConstructs()
-        {
-            foreach (var startingConstruct in _startingVariables.ConstructNumbers)
-            {
+            foreach (var startingConstruct in constructNumbers)
                 foreach (var construct in _objectsLibrary.ConstructStats)
-                {
                     if (startingConstruct.Type == construct.Type)
-                    {
                         for (int i = 0; i < startingConstruct.Number; i++)
-                        {
                             CreateConstruct(construct);
-                        }
-                    }
-                }
-            }
         }
 
         private void CreateConstruct(ConstructStats constructStats)
         {
             Construct newConstruct = Instantiate(constructStats.prefab);
             newConstruct.Init(constructStats);
-            OnHutConstructed?.Invoke(constructStats.Spawn.ToArray(), this.transform.position);
+            newConstruct.FinishConstruction();
+            FinishConstruction(newConstruct);
         }
 
         public void CreateBlueprint(ConstructType type)
@@ -56,28 +42,23 @@
                 return;
             }
 
-            _blueprint = Instantiate(_blueprintPrefab, this.transform.position, Quaternion.identity);
-            _blueprint.Init(constructStats);
-            _blueprint.OnConstructionFinished += FinishConstruction;
+            _newConstruct = Instantiate(constructStats.prefab, this.transform.position, Quaternion.identity);
+            _newConstruct.Init(constructStats);
+            _newConstruct.OnConstructionFinished += FinishConstruction;
         }
 
-        public void UpdateBlueprintPosition(Vector3 newPosition)
-        {
-            _blueprint.transform.position = newPosition;
-        }
+        public void UpdateBlueprintPosition(Vector3 newPosition)=>
+            _newConstruct.transform.position = newPosition;
+        
 
-        public void UpdateBlueprintRotation(Vector3 rotationPoint)
-        {
-            _blueprint.transform.LookAt(new Vector3(rotationPoint.x, _blueprint.transform.position.y, rotationPoint.z));
-        }
+        public void UpdateBlueprintRotation(Vector3 rotationPoint)=>_newConstruct.transform.LookAt
+            (new Vector3(rotationPoint.x, _newConstruct.transform.position.y, rotationPoint.z));
+        
         
         private void FinishConstruction(Construct construct)
         {
-            Construct newConstruct = Instantiate(construct.Stats.prefab);
-            newConstruct.transform.position = construct.transform.position;
-            newConstruct.transform.rotation = construct.transform.rotation;
-            Destroy(_blueprint.gameObject);
-            OnHutConstructed?.Invoke(construct.Stats.Spawn.ToArray(), this.transform.position);
+            OnHutConstructed?.Invoke(construct.Stats.Spawn.ToArray(), construct.transform.position); 
+            construct.OnConstructionFinished -= FinishConstruction;
         }
     }
 }

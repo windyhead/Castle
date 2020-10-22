@@ -290,7 +290,6 @@ GameObject:
   - component: {fileID: 963194228}
   - component: {fileID: 963194227}
   - component: {fileID: 963194226}
-  - component: {fileID: 963194229}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -363,22 +362,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 45, y: 0, z: 0}
---- !u!114 &963194229
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 963194225}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ac42816f7a0098f4587a8e90dfb79adc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveSpeed: 15
-  zoomSpeed: 15
-  minZoomDist: 3
-  maxZoomDist: 10
 --- !u!114 &1526892566 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6357849195145984931, guid: 159008aa76c658245939eee0febfdf6b,
@@ -484,6 +467,17 @@ PrefabInstance:
       propertyPath: _ground
       value: 
       objectReference: {fileID: 1590931755}
+    - target: {fileID: 6357849195145984931, guid: 159008aa76c658245939eee0febfdf6b,
+        type: 3}
+      propertyPath: _resourceManager
+      value: 
+      objectReference: {fileID: 6357849193720017846}
+    - target: {fileID: 6357849195145984931, guid: 159008aa76c658245939eee0febfdf6b,
+        type: 3}
+      propertyPath: _startingVariables
+      value: 
+      objectReference: {fileID: 11400000, guid: 16ba803a43ffdc545a0d54dce1a72425,
+        type: 2}
     - target: {fileID: 6357849195145984932, guid: 159008aa76c658245939eee0febfdf6b,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -549,6 +543,26 @@ PrefabInstance:
       propertyPath: _eventSystem
       value: 
       objectReference: {fileID: 255929819}
+    - target: {fileID: 6357849195145984934, guid: 159008aa76c658245939eee0febfdf6b,
+        type: 3}
+      propertyPath: _moveCameraSpeed
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 6357849195145984934, guid: 159008aa76c658245939eee0febfdf6b,
+        type: 3}
+      propertyPath: _zoomCameraSpeed
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 6357849195145984934, guid: 159008aa76c658245939eee0febfdf6b,
+        type: 3}
+      propertyPath: minCameraZoom
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 6357849195145984934, guid: 159008aa76c658245939eee0febfdf6b,
+        type: 3}
+      propertyPath: maxCameraZoom
+      value: 60
+      objectReference: {fileID: 0}
     - target: {fileID: 6357849195145984954, guid: 159008aa76c658245939eee0febfdf6b,
         type: 3}
       propertyPath: m_Name
@@ -556,6 +570,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 159008aa76c658245939eee0febfdf6b, type: 3}
+--- !u!114 &6357849193720017846 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6357849195145984929, guid: 159008aa76c658245939eee0febfdf6b,
+    type: 3}
+  m_PrefabInstance: {fileID: 6357849193720017845}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b5a16508a046ae4e8a94526d6523409, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &8045159380843007995
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -733,11 +759,31 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8045159379773172877, guid: 02784444bb083d14dbfe28d820c828b7,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8045159379773172877, guid: 02784444bb083d14dbfe28d820c828b7,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8045159379773172877, guid: 02784444bb083d14dbfe28d820c828b7,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8045159379773172878, guid: 02784444bb083d14dbfe28d820c828b7,
         type: 3}
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 963194227}
+    - target: {fileID: 8045159379773172878, guid: 02784444bb083d14dbfe28d820c828b7,
+        type: 3}
+      propertyPath: m_RenderMode
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8045159380632366360, guid: 02784444bb083d14dbfe28d820c828b7,
         type: 3}
       propertyPath: m_AnchoredPosition.x

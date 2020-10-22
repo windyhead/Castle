@@ -14,12 +14,21 @@
         [SerializeField] private SelectionManager _selectionManager = default;
         [SerializeField] private UnitManager _unitManager = default;
         [SerializeField] private ConstructionManager _constructionManager = default;
+        [SerializeField] private ResourceManager _resourceManager = default;
+        [SerializeField] private StartingVariables _startingVariables = default;
         
         public InputState State { get; private set; }
 
         private void Awake()
         {
             State = InputState.Selection;
+            _constructionManager.OnHutConstructed += _unitManager.CreateUnits;
+        }
+
+        private void Start()
+        {
+            _resourceManager.CreateStartingResources(_startingVariables.ResourcesNumbers.ToArray());
+            _constructionManager.CreateStartingConstructs(_startingVariables.ConstructNumbers.ToArray());
         }
 
         public void DetectSelection(RaycastHit hit, Vector3 cameraPoint)
@@ -66,17 +75,21 @@
             
             if (orderedConstruct != null)
             {
-                if (orderedConstruct.IsReady && orderedConstruct.Stats.Type == ConstructType.Barracks)
-                    _unitManager.MoveUnits(_selectionManager.SelectedUnits.ToArray(),
-                        orderedConstruct.transform.position);
-                else
+                if (orderedConstruct.Stats.Type == ConstructType.Barracks)//if constr isready
+                {
+                    _unitManager.Move(_selectionManager.SelectedUnits.ToArray(), orderedConstruct.transform.position);
+                    _unitManager.Enter(_selectionManager.SelectedUnits.ToArray(),orderedConstruct);
+                    _unitManager.OnUnitDestroy += _selectionManager.Deselect;
+                }
+
+               /* else
                 {
                     if (_selectionManager.SelectedUnits.Count == 0)
                         return;
 
                     _unitManager.SendUnitsForResources(_selectionManager.SelectedUnits.ToArray(),
-                        orderedConstruct);
-                }
+                        orderedConstruct, _resourceManager.GetResources(orderedConstruct.Resources[0]));
+                }*/
             }
         }
 
@@ -84,7 +97,7 @@
         {
             if (_selectionManager.SelectedUnits.Count == 0)
                     return;
-                _unitManager.MoveUnits(_selectionManager.SelectedUnits.ToArray(), hit.point);
+            _unitManager.Move(_selectionManager.SelectedUnits.ToArray(), hit.point);
         }
 
         public void ChangeState()

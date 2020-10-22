@@ -8,10 +8,16 @@ namespace BuildACastle
     {
         [SerializeField] private GameHandler _gameHandler;
         [SerializeField] private EventSystem _eventSystem;
+       
+        public float _moveCameraSpeed;
+        public float _zoomCameraSpeed;
+ 
+        public float minCameraZoom;
+        public float maxCameraZoom;
+        
         private const string SelectableLayer = "selectable";
         private const string GroundLayer = "ground";
-        private const string UILayer = "UI";
-        
+
         private Camera _mainCamera;
         private RaycastHit _hit;
 
@@ -24,11 +30,14 @@ namespace BuildACastle
 
         private void Awake()
         {
-            _mainCamera = Camera.main;
+            _mainCamera = UnityEngine.Camera.main;
         }
 
         private void Update()
         {
+            MoveCamera();
+            ZoomCamera();
+            
             switch (_gameHandler.State)
             {
                 case InputState.Selection:
@@ -52,6 +61,24 @@ namespace BuildACastle
                     break;
                 }
             }
+        }
+        
+        private void MoveCamera ()
+        {
+            var direction = transform.forward * Input.GetAxis("Vertical") + transform.right * Input.GetAxis("Horizontal");
+            _mainCamera.transform.position += direction * _moveCameraSpeed * Time.deltaTime;
+        }
+        
+        private void ZoomCamera ()
+        {
+            float scrollInput = Input.GetAxis("Mouse ScrollWheel");
+            float distance = Vector3.Distance(transform.position, _mainCamera.transform.position);
+ 
+            if(distance < minCameraZoom && scrollInput > 0)
+                return;
+            if(distance > maxCameraZoom && scrollInput < 0)
+                return;
+            _mainCamera.transform.position += _mainCamera.transform.forward * scrollInput * _zoomCameraSpeed;
         }
 
         private void SelectionLeftMouseClick()
@@ -116,7 +143,6 @@ namespace BuildACastle
 
             if (Physics.Raycast(ray, out hit, Mathf.Infinity, LayerMask.GetMask(layer)))
             {
-                Debug.Log(layer);
                 _hit = hit;
                 return true;
             }

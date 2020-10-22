@@ -1,12 +1,10 @@
-﻿using TMPro;
-
-namespace BuildACastle
+﻿namespace BuildACastle
 {
-
     using UnityEngine;
     using System.Collections.Generic;
     using System;
     using UnityEngine.UI;
+    using TMPro;
     
     public enum ConstructType
     {
@@ -17,43 +15,50 @@ namespace BuildACastle
     [RequireComponent(typeof(Selectable))]
     public class Construct : MonoBehaviour
     {
-        [SerializeField] private TextMeshProUGUI soldiersText;
+        [SerializeField] private TextMeshProUGUI _nameText = default;
+        [SerializeField] private Slider _progressBar = default;
+        [SerializeField] private GameObject _mainBuilding = default;
+        [SerializeField] private GameObject _bluePrint = default;
+        
         public Action <Construct> OnConstructionFinished;
-        public ConstructStats Stats{ get; private set; }
-        private Selectable _selectable;
-        private int soldiers = 0;
-        public bool IsReady { get; set; } = false;
+        public ConstructStats Stats{ get; private set; } public bool IsReady { get; private set; }
         public List<ResourceType> Resources { get; } = new List<ResourceType>();
-
+        
+        private Selectable _selectable;
         public void Init(ConstructStats stats)
         {
             _selectable = GetComponent<Selectable>();
             Stats = stats;
             SetResources();
+            SetProgressBar();
             GetComponent<Collider>().enabled = true;
-            if (soldiersText != null)
-            soldiersText.gameObject.SetActive(false);
+            _nameText.text = stats.ConstructName;
+            _bluePrint.gameObject.SetActive(true);
+            _mainBuilding.gameObject.SetActive(false);
+        }
+        
+        public void FinishConstruction()
+        {
+            IsReady = true;
+            _bluePrint.gameObject.SetActive(false);
+            _mainBuilding.gameObject.SetActive(true);
+            _progressBar.gameObject.SetActive(false);
+            OnConstructionFinished?.Invoke(this);
         }
 
         public void AddResource(ResourceType resource)
         {
             Resources.Remove(resource);
-            if (Resources.Count == 0)
-            {
-                IsReady = true;
-                OnConstructionFinished?.Invoke(this);
-            }
         }
 
-        public void  AddSoldier()
+        public void AddConstructionProgress()
         {
-            soldiersText.gameObject.SetActive(true);
-            soldiers++;
-            soldiersText.text = soldiers.ToString();
+            UpdateProgressBar();
+            if (Resources.Count == 0)
+                FinishConstruction();
         }
 
-        public void Selected() => _selectable.Selected();
-        public void Deselected() => _selectable.DeSelected();
+        public void Selected(bool isSelected)=>_selectable.Selected(isSelected);
 
         private void SetResources()
         {
@@ -61,5 +66,13 @@ namespace BuildACastle
                 for (int i = 0; i < resource.Number; i++)
                     Resources.Add(resource.Type);
         }
+
+        private void SetProgressBar()
+        {
+            _progressBar.maxValue = Resources.Count;
+            _progressBar.value = 0;
+        }
+
+        private void UpdateProgressBar()=>_progressBar.value = _progressBar.maxValue - Resources.Count;
     }
 }

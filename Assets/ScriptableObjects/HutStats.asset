@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: HutStats
   m_EditorClassIdentifier: 
   Type: 0
+  ConstructName: "\u0425\u0438\u0431\u0430\u0440\u0430"
   Resources:
   - Type: 0
-    Number: 10
+    Number: 4
   - Type: 1
     Number: 2
   Spawn:

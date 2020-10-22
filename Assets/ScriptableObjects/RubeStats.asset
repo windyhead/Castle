@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf7c3e52dfc4074409a1307278e8f903, type: 3}
   m_Name: RubeStats
   m_EditorClassIdentifier: 
-  rank: 0
-  speed: 10
-  prefab: {fileID: 2920877007376201862, guid: 2a266f79c93f07a4ba7ae9ffe67e96e7, type: 3}
+  Rank: 0
+  UnitName: "\u0434\u0435\u0440\u0435\u0432\u0435\u043D\u0449\u0438\u043D\u0430"
+  Speed: 10
+  Prefab: {fileID: 2920877007376201862, guid: 2a266f79c93f07a4ba7ae9ffe67e96e7, type: 3}

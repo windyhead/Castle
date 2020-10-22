@@ -28,7 +28,7 @@
 
             if (SelectedConstruct != null)
             {
-                SelectedConstruct.Deselected();
+                SelectedConstruct.Selected(false);
                 SelectedConstruct = null;
             }
 
@@ -45,11 +45,17 @@
             }
         }
 
+        public void Deselect(Unit unit)
+        {
+            unit.Deselected();
+            SelectedUnits.Remove(unit);
+        }
+
         public void Select(Construct construct)
         {
             Clear();
             SelectedConstruct = construct;
-            SelectedConstruct.Selected();
+            SelectedConstruct.Selected(true);
         }
 
         public void Select(Vector3 firstPosition, Vector3 secondPosition, Unit[] units)

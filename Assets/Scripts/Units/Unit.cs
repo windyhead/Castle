@@ -1,12 +1,9 @@
-﻿using System;
-using UnityEditorInternal;
-using UnityEngine.AI;
-
-namespace BuildACastle
+﻿namespace BuildACastle
 {
-    using System.Collections;
     using System.Collections.Generic;
     using UnityEngine;
+    using System;
+    using UnityEngine.AI;
     
     public enum UnitRank
     {
@@ -14,67 +11,64 @@ namespace BuildACastle
         Soldier
     }
 
-    [RequireComponent(typeof(Selectable),typeof(NavMeshAgent),typeof(Collider))]
+    [RequireComponent(typeof(Selectable), typeof(NavMeshAgent), typeof(Collider))]
     public class Unit : MonoBehaviour
     {
-        public Action <Unit> OnTaskFinished;
+        public Action OnOrdersFinished;
+        public Action OnMoveFinished;
+        public Action <Unit> OnEnter;
         public UnitRank Rank { get; private set; }
         private Selectable _selectable;
         private NavMeshAgent _navMeshAgent;
         private Resource _heldResource;
-        public Construct Construct { get; private set; }
 
-        private void OnTriggerEnter(Collider other)
+        private readonly List<Order> orders = new List<Order>();
+
+        public void AddOrder(Order newOrder)
         {
-            var resource = other.gameObject.GetComponent<Resource>();
-            var construct = other.gameObject.GetComponent<Construct>();
-            if (resource != null && resource == _heldResource)
-            {
-                Destroy(resource.gameObject);
-                ReturnToConstruct();
-            }
-            else if (construct != null && construct == Construct)
-            {
-                if (construct.IsReady && construct.Stats.Type == ConstructType.Barracks)
-                {
-                    Construct.AddSoldier();
-                    Destroy(this.gameObject);
-                    return;
-                }
-                
-                construct.AddResource(_heldResource.Type);
-                _heldResource = null;
-                OnTaskFinished?.Invoke(this);
-            }
+            newOrder.OnFinished += NextOrder;
+            orders.Add(newOrder);
+            if (orders.Count == 1)
+                orders[0].ApplyOrder(this);
+        }
+
+        private void NextOrder()
+        {
+            orders[0].OnFinished -= NextOrder;
+            orders.RemoveAt(0);
+            if (orders.Count == 0)
+                OnOrdersFinished?.Invoke();
+            else
+                orders[0].ApplyOrder(this);
+        }
+
+        public void Update()
+        {
+            HandleMovement();
+        }
+
+        private void HandleMovement()
+        {
+            if (!_navMeshAgent.pathPending && orders.Count>0)
+                if (_navMeshAgent.remainingDistance <= _navMeshAgent.stoppingDistance)
+                    if (!_navMeshAgent.hasPath || _navMeshAgent.velocity.sqrMagnitude == 0f)
+                        OnMoveFinished?.Invoke();
         }
 
         public void Init(UnitStats stats)
         {
             _navMeshAgent = GetComponent<NavMeshAgent>();
             _selectable = GetComponent<Selectable>();
-            Rank = stats.rank;
-            _navMeshAgent.speed = stats.speed;
+            Rank = stats.Rank;
+            _navMeshAgent.speed = stats.Speed;
         }
 
-        public void Move(Vector3 destination)
-        {
-            _navMeshAgent.destination = destination;
-        }
+        public void Move(Vector3 destination)=>_navMeshAgent.destination = destination;
+
+        public void Selected() => _selectable.Selected(true);
         
-        public void Move(Resource resource,Construct construct)
-        {
-            _navMeshAgent.destination = resource.transform.position;
-            _heldResource = resource;
-            Construct = construct;
-        }
-
-        public void ReturnToConstruct()
-        {
-            _navMeshAgent.destination = Construct.transform.position;
-        }
-
-        public void Selected() => _selectable.Selected();
-        public void Deselected() => _selectable.DeSelected();
+        public void Deselected() => _selectable.Selected(false);
+        
 
     }
 }

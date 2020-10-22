@@ -11,17 +11,9 @@ namespace BuildACastle
 
         private void Awake()
         {
-            DeSelected();
+            Selected(false);
         }
 
-        public void Selected()
-        {
-           selection.SetActive(true);
-        }
-
-        public void DeSelected()
-        {
-           selection.SetActive(false);
-        }
+        public void Selected(bool isSelected)=>selection.SetActive(isSelected);
     }
 }
