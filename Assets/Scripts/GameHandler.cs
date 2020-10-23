@@ -1,6 +1,7 @@
 ﻿namespace BuildACastle
 {
     using UnityEngine;
+    using System.Collections.Generic;
 
     public enum InputState
     {
@@ -16,13 +17,15 @@
         [SerializeField] private ConstructionManager _constructionManager = default;
         [SerializeField] private ResourceManager _resourceManager = default;
         [SerializeField] private StartingVariables _startingVariables = default;
-        
+
         public InputState State { get; private set; }
 
         private void Awake()
         {
             State = InputState.Selection;
             _constructionManager.OnHutConstructed += _unitManager.CreateUnits;
+            _unitManager.OnUnitDestroy += _selectionManager.Deselect;
+            _unitManager.OnUnitIdle += SendUnitsForConstruction;
         }
 
         private void Start()
@@ -35,12 +38,12 @@
         {
             Unit selectedUnit = hit.collider.gameObject.GetComponent<Unit>();
             Construct selectedConstruct = hit.collider.gameObject.GetComponent<Construct>();
-            
+
             _selectionManager.EnableFrame(cameraPoint);
-            
+
             if (selectedUnit != null)
                 _selectionManager.Select(new Unit[] {selectedUnit});
-            
+
             else if (selectedConstruct != null)
                 _selectionManager.Select(selectedConstruct);
         }
@@ -71,32 +74,26 @@
 
         public void DetectConstructOrder(RaycastHit hit)
         {
+          
             Construct orderedConstruct = hit.collider.GetComponent<Construct>();
+
+            if (orderedConstruct == null || _selectionManager.SelectedUnits.Count == 0)
+                return;
             
-            if (orderedConstruct != null)
-            {
-                if (orderedConstruct.Stats.Type == ConstructType.Barracks)//if constr isready
-                {
-                    _unitManager.Move(_selectionManager.SelectedUnits.ToArray(), orderedConstruct.transform.position);
-                    _unitManager.Enter(_selectionManager.SelectedUnits.ToArray(),orderedConstruct);
-                    _unitManager.OnUnitDestroy += _selectionManager.Deselect;
-                }
-
-               /* else
-                {
-                    if (_selectionManager.SelectedUnits.Count == 0)
-                        return;
-
-                    _unitManager.SendUnitsForResources(_selectionManager.SelectedUnits.ToArray(),
-                        orderedConstruct, _resourceManager.GetResources(orderedConstruct.Resources[0]));
-                }*/
-            }
+            if (orderedConstruct.Stats.Type == ConstructType.Barracks && orderedConstruct.IsReady)
+                _unitManager.EnterOrders(_selectionManager.SelectedUnits.ToArray(), orderedConstruct);
+            
+            else if (!orderedConstruct.IsReady)
+                SendUnitsForConstruction(_selectionManager.SelectedUnits, orderedConstruct);
+            
+            else
+                _unitManager.Move(_selectionManager.SelectedUnits.ToArray(), orderedConstruct.transform.position);
         }
 
         public void DetectGroundOrder(RaycastHit hit)
         {
             if (_selectionManager.SelectedUnits.Count == 0)
-                    return;
+                return;
             _unitManager.Move(_selectionManager.SelectedUnits.ToArray(), hit.point);
         }
 
@@ -118,12 +115,46 @@
 
         public void UpdateMousePosition(RaycastHit hit, Vector3 mousePosition)
         {
-            
+
             if (State == InputState.Construction)
                 _constructionManager.UpdateBlueprintPosition(mousePosition);
-            
+
             else if (State == InputState.Rotation)
                 _constructionManager.UpdateBlueprintRotation(hit.point);
+        }
+
+        private void SendUnitsForConstruction(List<Unit> selectedUnits,Construct construct)
+        {
+            int resourceCollected = construct.ResourcesCollected;
+            List<ResourceType> resourcesToFind = new List<ResourceType>();
+            
+            foreach (var resource in construct.ResourcesNeeded.ToArray())
+                resourcesToFind.Add(resource);
+            
+            if (resourcesToFind.Count == 0)
+                return;
+            
+            foreach (var unit in selectedUnits)
+            {
+                if (unit.Type!=UnitType.Rube)
+                    _unitManager.Move(unit, construct.transform.position);
+
+                else if (resourceCollected > 0)
+                {
+                    _unitManager.BuildOrders(unit, construct);
+                    resourceCollected--;
+                }
+
+                else
+                {
+                    var rube = unit as RubeUnit;
+                    var selectedResource = rube.SearchResource(_resourceManager.GetResources(construct.ResourcesNeeded[0]));
+                    
+                    selectedResource.IsMarked = true;
+                    resourcesToFind.Remove(selectedResource.Type);
+                    _unitManager.ResourceOrders(unit,construct,selectedResource);
+                }
+            }
         }
     }
 }

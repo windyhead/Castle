@@ -22,8 +22,9 @@
         
         public Action <Construct> OnConstructionFinished;
         public ConstructStats Stats{ get; private set; } public bool IsReady { get; private set; }
-        public List<ResourceType> Resources { get; } = new List<ResourceType>();
-        
+        public List<ResourceType> ResourcesNeeded { get; } = new List<ResourceType>();
+        public int ResourcesCollected { get; private set; } = 0;
+
         private Selectable _selectable;
         public void Init(ConstructStats stats)
         {
@@ -48,13 +49,15 @@
 
         public void AddResource(ResourceType resource)
         {
-            Resources.Remove(resource);
+            ResourcesNeeded.Remove(resource);
+            ResourcesCollected++;
         }
 
         public void AddConstructionProgress()
         {
+            ResourcesCollected--;
             UpdateProgressBar();
-            if (Resources.Count == 0)
+            if (ResourcesNeeded.Count == 0)
                 FinishConstruction();
         }
 
@@ -64,15 +67,15 @@
         {
             foreach (var resource in Stats.Resources)
                 for (int i = 0; i < resource.Number; i++)
-                    Resources.Add(resource.Type);
+                    ResourcesNeeded.Add(resource.Type);
         }
 
         private void SetProgressBar()
         {
-            _progressBar.maxValue = Resources.Count;
+            _progressBar.maxValue = ResourcesNeeded.Count;
             _progressBar.value = 0;
         }
 
-        private void UpdateProgressBar()=>_progressBar.value = _progressBar.maxValue - Resources.Count;
+        private void UpdateProgressBar()=>_progressBar.value = _progressBar.maxValue - ResourcesNeeded.Count;
     }
 }

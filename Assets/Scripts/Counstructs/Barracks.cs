@@ -23,6 +23,5 @@ namespace BuildACastle
         }
 
         private void UpdateSoldiersText() =>_soldiersText.text = soldiers.Count.ToString();
-
     }
 }

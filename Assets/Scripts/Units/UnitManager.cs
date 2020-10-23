@@ -1,14 +1,16 @@
 ﻿using System.Linq;
+using UnityEngine.PlayerLoop;
 
 namespace BuildACastle
 {
     using UnityEngine;
-    using System.Collections.Generic;
     using System;
+    using System.Collections.Generic;
     
     public class UnitManager : MonoBehaviour
     {
         public Action <Unit> OnUnitDestroy;
+        public Action<List<Unit>,Construct> OnUnitIdle;
         [SerializeField] private ObjectsLibrary objectsLibrary = default;
         [SerializeField] private UnitData _unitData = default;
 
@@ -16,9 +18,42 @@ namespace BuildACastle
         {
             foreach (var startingUnit in unitsNumbers)
                 foreach (var unit in objectsLibrary.UnitStats)
-                    if (startingUnit.Rank == unit.Rank)
+                    if (startingUnit.type == unit.type)
                         for (int i = 0; i < startingUnit.Number; i++) 
                             CreateUnit(unit, position);
+        }
+        
+        public Unit[] GetUnits()
+        {
+            return _unitData.GetUnits();
+        }
+        
+        public void Move (Unit unit,Vector3 position)=>unit.AddOrder(new MoveOrder(position));
+
+        public void Move (Unit[] units,Vector3 position)
+        {
+            foreach (var unit in units)
+                unit.AddOrder(new MoveOrder(position));
+        }
+
+        public void BuildOrders(Unit unit,Construct construct)
+        {
+            Move(unit,construct.transform.position);
+            Build(unit as RubeUnit, construct);
+        }
+
+        public void ResourceOrders(Unit unit,Construct construct,Resource resource)
+        {
+            Move(unit, resource.transform.position);
+            TakeResource(unit as RubeUnit,resource);
+            Move(unit,construct.transform.position);
+            UseResource(unit as RubeUnit,resource,construct);
+        }
+
+        public void EnterOrders(Unit[] units,Construct construct)
+        {
+            Move(units, construct.transform.position);
+            Enter(units, construct);
         }
 
         private void CreateUnit(UnitStats unitStats, Vector3 position)
@@ -29,61 +64,48 @@ namespace BuildACastle
             newUnit.transform.position = generatedPosition;
             newUnit.Init(unitStats);
             _unitData.AddUnit(newUnit);
+            newUnit.OnOrdersFinished += ReturnToWork;
         }
         
-        public void Move (Unit[] units,Vector3 position)
-        {
-            foreach (var unit in units)
-                unit.AddOrder(new MoveOrder(position));
-        }
-        
-        public void Enter (Unit[] units,Construct construct)
+        private void Enter (Unit[] units,Construct construct)
         {
             foreach (var unit in units)
             {
                 unit.AddOrder(new EnterOrder(construct as Barracks));
-                unit.OnEnter += RemoveUnit;
+                unit.OnEnter += DestroyUnit;
             }
         }
-        
-        
-        public Unit[] GetUnits()
+
+        private void TakeResource(RubeUnit rube,Resource resource)
         {
-            return _unitData.GetUnits();
+            rube.AddOrder(new TakeResourceOrder(resource));
         }
 
-        private void RemoveUnit(Unit unit)
+        private void UseResource(RubeUnit rube, Resource resource, Construct construct)
+        {
+            rube.AddOrder(new UseResourceOrder(resource,construct));
+        }
+
+        private void Build(RubeUnit rube, Construct construct)
+        {
+            rube.AddOrder(new BuildOrder(construct));
+        }
+
+        private void DestroyUnit(Unit unit)
         {
             Destroy(unit.gameObject);
             OnUnitDestroy?.Invoke(unit);
             _unitData.RemoveUnit(unit);
-            
         }
 
-        /*public void SendUnitsForResources(Unit[] selectedUnits, Construct construct, Resource[] foundedResources)
-         {
-             List<ResourceType> resourcesToFind = new List<ResourceType>();
-             foreach (var resource in construct.Resources.ToArray())
-                 resourcesToFind.Add(resource);
- 
-             foreach (var unit in selectedUnits)
-             {
-                 List<float> resourceDistance = new List<float>();
-                 Dictionary<float, Resource> distanceDictionary = new Dictionary<float, Resource>();
- 
-                 foreach (var resource in foundedResources)
-                 {
-                     float distance = Vector3.Distance(unit.transform.position, resource.transform.position);
-                     resourceDistance.Add(distance);
-                     distanceDictionary.Add(distance, resource);
-                 }
- 
-                 resourceDistance.Sort();
-                // unit.Move(distanceDictionary[resourceDistance[0]], construct);
-                 Debug.Log($"removed {distanceDictionary[resourceDistance[0]].Type}");
-                 distanceDictionary[resourceDistance[0]].IsMarked = true;
-                 resourcesToFind.Remove(distanceDictionary[resourceDistance[0]].Type);
-             }
-         }*/
+        private void ReturnToWork(Unit unit)
+        {
+            if (!unit is RubeUnit)
+                return;
+            RubeUnit rube = unit as RubeUnit;
+            if (rube.BuildingConstruct == null || rube.BuildingConstruct.IsReady)
+                return;
+            OnUnitIdle?.Invoke(new List<Unit>{rube},rube.BuildingConstruct);
+        }
     }
 }

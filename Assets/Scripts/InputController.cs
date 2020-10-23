@@ -6,8 +6,8 @@ namespace BuildACastle
 
     public class InputController : MonoBehaviour
     {
-        [SerializeField] private GameHandler _gameHandler;
-        [SerializeField] private EventSystem _eventSystem;
+        [SerializeField] private GameHandler _gameHandler = default;
+        [SerializeField] private EventSystem _eventSystem = default;
        
         public float _moveCameraSpeed;
         public float _zoomCameraSpeed;

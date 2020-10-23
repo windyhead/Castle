@@ -23,18 +23,18 @@
             return _units.ToArray();
         }
 
-        public Unit[] GetUnits(UnitRank rank)
+        public Unit[] GetUnits(UnitType type)
         {
             List<Unit> foundedUnits = new List<Unit>();
             foreach (var unit in _units)
             {
-                if (unit.Rank == rank)
+                if (unit.Type == type)
                     foundedUnits.Add(unit);
             }
 
             if (foundedUnits.Count == 0)
             {
-                Debug.Log($"no units of rank {rank} was found");
+                Debug.Log($"no units of rank {type} was found");
                 return null;
             }
 

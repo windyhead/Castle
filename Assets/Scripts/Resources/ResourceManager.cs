@@ -8,26 +8,18 @@
         [SerializeField] private Terrain _ground = default;
         [SerializeField] private ObjectsLibrary _objectsLibrary = default;
 
-        private readonly List<Resource> _unusedResources = new List<Resource>();
+        private readonly List<Resource> resources = new List<Resource>();
         private readonly List<Vector3> _randomPositions = new List<Vector3>();
         
         public void CreateStartingResources(ResourceNumber[] resourceNumbers)
         {
-            GenerateResourcePositions(resourceNumbers);
+            GenerateResourcePositions(resourceNumbers); 
             
-            foreach (var startingResource in resourceNumbers)
-            {
+            foreach (var startingResource in resourceNumbers) 
                 foreach (var resource in _objectsLibrary.Resources)
-                {
-                    if (startingResource.Type == resource.Type)
-                    {
-                        for (int i = 0; i < startingResource.Number; i++)
-                        {
-                            CreateResource(resource);
-                        }
-                    }
-                }
-            }
+                if (startingResource.Type == resource.Type)
+                    for (int i = 0; i < startingResource.Number; i++)
+                        CreateResource(resource);
         }
 
         private void GenerateResourcePositions(ResourceNumber[] resourceNumbers)
@@ -45,18 +37,21 @@
             Resource newResource = Instantiate(resource);
             newResource.transform.position = _randomPositions[0];
             newResource.transform.rotation = Quaternion.Euler(0, Random.Range(0, 360), 0);
+           
+            newResource.OnResourceTaken += ResourceTaken;
+            newResource.OnResourceDropped += ResourceDropped;
+            newResource.OnResourceUsed += ResourceUsed;
 
             _randomPositions.RemoveAt(0);
-            _unusedResources.Add(newResource);
+            resources.Add(newResource);
         }
 
         public Resource[] GetResources(ResourceType type)
         {
-            Debug.Log($"Searching for {type}");
             List<Resource> foundedResources = new List<Resource>();
-            foreach (var resource in _unusedResources)
+            foreach (var resource in resources)
             {
-                if (resource.Type == type)
+                if (resource.Type == type && !resource.IsMarked)
                     foundedResources.Add(resource);
             }
 
@@ -69,17 +64,31 @@
             return foundedResources.ToArray();
         }
 
-        public void UseResource(Resource usedResource)
-        {
-            _unusedResources.Remove(usedResource);
-        }
-
         private Vector3 GenerateRandomPosition()
         {
             var xPosition = _ground.transform.position.x + Random.Range(0, _ground.terrainData.size.x);
             var zPosition = _ground.transform.position.z + Random.Range(0, _ground.terrainData.size.z);
             var pos = new Vector3(xPosition, _ground.SampleHeight(new Vector3(xPosition, 0, zPosition)), +zPosition);
             return pos;
+        }
+
+        private void ResourceTaken(Resource resource)
+        {
+            resources.Remove(resource); 
+            Destroy(resource.gameObject);
+        }
+
+        private void  ResourceDropped(Resource resource, Vector3 position)
+        {
+            Resource newResource = Instantiate(resource);
+            newResource.transform.position = position;
+            newResource.transform.rotation = Quaternion.Euler(0, Random.Range(0, 360), 0);
+            resources.Add(newResource);
+        }
+
+        private void ResourceUsed(Resource resource)
+        {
+            Destroy(resource);
         }
     }
 }

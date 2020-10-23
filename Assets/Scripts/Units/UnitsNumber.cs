@@ -5,7 +5,7 @@
      [Serializable]
      public class UnitsNumber
      {
-         public UnitRank Rank;
+         public UnitType type;
          public int Number;
      }
  }

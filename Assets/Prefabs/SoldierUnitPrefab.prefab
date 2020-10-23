@@ -112,5 +112,6 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: 0.2940001
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1255417443610826759, guid: bf95cce0408d8e54288a3a490325e11e, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: bf95cce0408d8e54288a3a490325e11e, type: 3}

@@ -1,6 +1,4 @@
-﻿using UnityEditor;
-
-namespace BuildACastle
+﻿namespace BuildACastle
 {
    using System;
     using UnityEngine;
@@ -9,11 +7,7 @@ namespace BuildACastle
     {
         [SerializeField] private GameObject selection = default;
 
-        private void Awake()
-        {
-            Selected(false);
-        }
-
+        private void Awake()=>Selected(false);
         public void Selected(bool isSelected)=>selection.SetActive(isSelected);
     }
 }

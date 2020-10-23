@@ -22,9 +22,7 @@
         public void Clear()
         {
             foreach (var unit in SelectedUnits)
-            {
                 unit.Deselected();
-            }
 
             if (SelectedConstruct != null)
             {
@@ -82,10 +80,8 @@
             _selectionFrame.gameObject.SetActive(true);
         }
 
-        public void DisableFrame()
-        {
-            _selectionFrame.gameObject.SetActive(false);
-        }
+        public void DisableFrame()=>_selectionFrame.gameObject.SetActive(false);
+        
 
         public void UpdateFrame(Vector3 mousePosition)
         {
