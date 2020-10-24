@@ -5,7 +5,7 @@
     using System;
     using UnityEngine.UI;
     using TMPro;
-    
+
     public enum ConstructType
     {
         Hut,
@@ -19,13 +19,15 @@
         [SerializeField] private Slider _progressBar = default;
         [SerializeField] private GameObject _mainBuilding = default;
         [SerializeField] private GameObject _bluePrint = default;
-        
-        public Action <Construct> OnConstructionFinished;
-        public ConstructStats Stats{ get; private set; } public bool IsReady { get; private set; }
+
+        public Action<Construct> OnConstructionFinished;
+        public ConstructStats Stats { get; private set; }
+        public bool IsReady { get; private set; }
         public List<ResourceType> ResourcesNeeded { get; } = new List<ResourceType>();
         public int ResourcesCollected { get; private set; } = 0;
 
         private Selectable _selectable;
+
         public void Init(ConstructStats stats)
         {
             _selectable = GetComponent<Selectable>();
@@ -37,7 +39,7 @@
             _bluePrint.gameObject.SetActive(true);
             _mainBuilding.gameObject.SetActive(false);
         }
-        
+
         public void FinishConstruction()
         {
             IsReady = true;
@@ -61,7 +63,7 @@
                 FinishConstruction();
         }
 
-        public void Selected(bool isSelected)=>_selectable.Selected(isSelected);
+        public void Selected(bool isSelected) => _selectable.Selected(isSelected);
 
         private void SetResources()
         {
@@ -76,6 +78,6 @@
             _progressBar.value = 0;
         }
 
-        private void UpdateProgressBar()=>_progressBar.value = _progressBar.maxValue - ResourcesNeeded.Count;
+        private void UpdateProgressBar() => _progressBar.value = _progressBar.maxValue - ResourcesNeeded.Count;
     }
 }

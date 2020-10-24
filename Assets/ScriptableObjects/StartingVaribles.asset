@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: StartingVaribles
   m_EditorClassIdentifier: 
   UnitsNumbers:
-  - Rank: 0
+  - type: 0
     Number: 0
-  - Rank: 1
+  - type: 1
     Number: 0
   ResourcesNumbers:
   - Type: 0

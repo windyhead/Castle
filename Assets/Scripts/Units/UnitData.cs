@@ -8,16 +8,10 @@
     {
         private readonly List<Unit> _units = new List<Unit>();
 
-        public void AddUnit(Unit newUnit)
-        {
-            _units.Add(newUnit);
-        }
-
-        public void RemoveUnit(Unit unit)
-        {
-            _units.Remove(unit);
-        }
-
+        public void AddUnit(Unit newUnit)=>_units.Add(newUnit);
+        
+        public void RemoveUnit(Unit unit)=>_units.Remove(unit);
+        
         public Unit[] GetUnits()
         {
             return _units.ToArray();

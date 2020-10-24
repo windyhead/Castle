@@ -1,52 +1,52 @@
 ﻿namespace BuildACastle
 {
-    
     using System.Collections;
-    using System.Collections.Generic;
     using UnityEngine;
     using System;
+
     public class RubeUnit : Unit
     {
-
         public Action OnBuildFinished;
-        public Resource HeldResource { get; private set; }
+        private Resource _heldResource;
+        private Resource _markedResource;
         public Construct BuildingConstruct { get; private set; }
         private const float BuildingTime = 5;
 
 
-        public Resource SearchResource(Resource[] resourcesOfType)
+        public override void NewOrder(Order newOrder)
         {
-            List<float> resourceDistance = new List<float>();
-            Dictionary<float, Resource> distanceDictionary = new Dictionary<float, Resource>();
+            if (_markedResource != null)
+                Unmark();
 
-            foreach (var resource in resourcesOfType)
-            {
-                float distance = Vector3.Distance(transform.position, resource.transform.position);
-                resourceDistance.Add(distance);
-                distanceDictionary.Add(distance, resource);
-            }
+            if (_heldResource != null)
+                DropResource();
 
-            resourceDistance.Sort();
-            return distanceDictionary[resourceDistance[0]];
+            base.NewOrder(newOrder);
         }
+
         public void TakeResource(Resource resource)
         {
-            Debug.Log("dd");
-            HeldResource = resource;
-            HeldResource.OnResourceTaken?.Invoke(resource);
+            _heldResource = resource;
+            _heldResource.Taken();
         }
 
-        public void DropResource()
+        public void Mark(Resource resource)
         {
-            HeldResource.OnResourceDropped?.Invoke(HeldResource,transform.position);
-            HeldResource = null;
+            _markedResource = resource;
+            _markedResource.Marked();
+        }
+
+        private void Unmark()
+        {
+            _markedResource.UnMarked();
+            _markedResource = null;
         }
 
         public void UseResource(Construct construct)
         {
-            construct.AddResource(HeldResource.Type);
-            HeldResource.OnResourceUsed?.Invoke(HeldResource);
-            HeldResource = null;
+            construct.AddResource(_heldResource.Type);
+            _heldResource.Used();
+            _heldResource = null;
             BuildingConstruct = construct;
         }
 
@@ -58,10 +58,15 @@
 
         private IEnumerator WaitForBuild(Construct construct)
         {
-           yield return new WaitForSeconds(BuildingTime); 
-           construct.AddConstructionProgress();
-           OnBuildFinished?.Invoke();
+            yield return new WaitForSeconds(BuildingTime);
+            construct.AddConstructionProgress();
+            OnBuildFinished?.Invoke();
         }
 
+        private void DropResource()
+        {
+            _heldResource.Dropped(transform.position);
+            _heldResource = null;
+        }
     }
 }

@@ -1,7 +1,6 @@
-﻿using UnityEngine.EventSystems;
-
-namespace BuildACastle
+﻿namespace BuildACastle
 {
+    using UnityEngine.EventSystems;
     using UnityEngine;
 
     public class InputController : MonoBehaviour
@@ -30,7 +29,7 @@ namespace BuildACastle
 
         private void Awake()
         {
-            _mainCamera = UnityEngine.Camera.main;
+            _mainCamera = Camera.main;
         }
 
         private void Update()

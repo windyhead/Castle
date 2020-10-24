@@ -43,11 +43,26 @@ PrefabInstance:
     - target: {fileID: 4052011182420937700, guid: bf95cce0408d8e54288a3a490325e11e,
         type: 3}
       propertyPath: m_StoppingDistance
-      value: 0
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 4052011182420937700, guid: bf95cce0408d8e54288a3a490325e11e,
         type: 3}
       propertyPath: m_AngularSpeed
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4052011182420937700, guid: bf95cce0408d8e54288a3a490325e11e,
+        type: 3}
+      propertyPath: m_Acceleration
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4052011182420937700, guid: bf95cce0408d8e54288a3a490325e11e,
+        type: 3}
+      propertyPath: m_ObstacleAvoidanceType
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4052011182420937700, guid: bf95cce0408d8e54288a3a490325e11e,
+        type: 3}
+      propertyPath: m_Speed
       value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 7059190659515099966, guid: bf95cce0408d8e54288a3a490325e11e,

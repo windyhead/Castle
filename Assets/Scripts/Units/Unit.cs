@@ -4,7 +4,7 @@
     using UnityEngine;
     using System;
     using UnityEngine.AI;
-    
+
     public enum UnitType
     {
         Rube,
@@ -14,15 +14,21 @@
     [RequireComponent(typeof(Selectable), typeof(NavMeshAgent), typeof(Collider))]
     public abstract class Unit : MonoBehaviour
     {
-        public Action <Unit> OnOrdersFinished;
+        public Action<Unit> OnOrdersFinished;
         public Action OnMoveFinished;
-        public Action <Unit> OnEnter;
-        
+        public Action<Unit> OnEnter;
+
         public UnitType Type { get; private set; }
         private Selectable _selectable;
         private NavMeshAgent _navMeshAgent;
         private bool isMoving;
         private readonly List<Order> orders = new List<Order>();
+
+        public virtual void NewOrder(Order newOrder)
+        {
+            orders.Clear();
+            AddOrder(newOrder);
+        }
 
         public void AddOrder(Order newOrder)
         {
@@ -47,18 +53,6 @@
             HandleMovement();
         }
 
-        private void HandleMovement()
-        {
-            if (isMoving && !_navMeshAgent.pathPending && orders.Count>0)
-                if (_navMeshAgent.remainingDistance <= _navMeshAgent.stoppingDistance)
-                    if (!_navMeshAgent.hasPath || _navMeshAgent.velocity.sqrMagnitude == 0f)
-                    {
-                        Debug.Log("stopped");
-                        isMoving = false;
-                        OnMoveFinished?.Invoke();
-                    }
-        }
-
         public void Init(UnitStats stats)
         {
             _navMeshAgent = GetComponent<NavMeshAgent>();
@@ -74,7 +68,18 @@
         }
 
         public void Selected() => _selectable.Selected(true);
-        
+
         public void Deselected() => _selectable.Selected(false);
+
+        private void HandleMovement()
+        {
+            if (isMoving && !_navMeshAgent.pathPending && orders.Count > 0)
+                if (_navMeshAgent.remainingDistance <= _navMeshAgent.stoppingDistance)
+                    if (!_navMeshAgent.hasPath || _navMeshAgent.velocity.sqrMagnitude == 0f)
+                    {
+                        isMoving = false;
+                        OnMoveFinished?.Invoke();
+                    }
+        }
     }
 }

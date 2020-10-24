@@ -74,18 +74,17 @@
 
         public void DetectConstructOrder(RaycastHit hit)
         {
-          
             Construct orderedConstruct = hit.collider.GetComponent<Construct>();
 
             if (orderedConstruct == null || _selectionManager.SelectedUnits.Count == 0)
                 return;
-            
+
             if (orderedConstruct.Stats.Type == ConstructType.Barracks && orderedConstruct.IsReady)
                 _unitManager.EnterOrders(_selectionManager.SelectedUnits.ToArray(), orderedConstruct);
-            
+
             else if (!orderedConstruct.IsReady)
                 SendUnitsForConstruction(_selectionManager.SelectedUnits, orderedConstruct);
-            
+
             else
                 _unitManager.Move(_selectionManager.SelectedUnits.ToArray(), orderedConstruct.transform.position);
         }
@@ -115,7 +114,6 @@
 
         public void UpdateMousePosition(RaycastHit hit, Vector3 mousePosition)
         {
-
             if (State == InputState.Construction)
                 _constructionManager.UpdateBlueprintPosition(mousePosition);
 
@@ -123,36 +121,40 @@
                 _constructionManager.UpdateBlueprintRotation(hit.point);
         }
 
-        private void SendUnitsForConstruction(List<Unit> selectedUnits,Construct construct)
+        private void SendUnitsForConstruction(List<Unit> selectedUnits, Construct construct)
         {
             int resourceCollected = construct.ResourcesCollected;
+
             List<ResourceType> resourcesToFind = new List<ResourceType>();
-            
-            foreach (var resource in construct.ResourcesNeeded.ToArray())
-                resourcesToFind.Add(resource);
-            
-            if (resourcesToFind.Count == 0)
-                return;
-            
+
+            if (construct.ResourcesNeeded.Count > 0)
+            {
+                foreach (var resource in construct.ResourcesNeeded.ToArray())
+                    resourcesToFind.Add(resource);
+
+                if (resourcesToFind.Count == 0)
+                    return;
+            }
+
             foreach (var unit in selectedUnits)
             {
-                if (unit.Type!=UnitType.Rube)
+                if (unit.Type != UnitType.Rube)
                     _unitManager.Move(unit, construct.transform.position);
 
                 else if (resourceCollected > 0)
                 {
-                    _unitManager.BuildOrders(unit, construct);
+                    var rube = unit as RubeUnit;
+                    _unitManager.BuildOrders(rube, construct);
                     resourceCollected--;
                 }
 
-                else
+                else if (resourcesToFind.Count > 0)
                 {
                     var rube = unit as RubeUnit;
-                    var selectedResource = rube.SearchResource(_resourceManager.GetResources(construct.ResourcesNeeded[0]));
-                    
-                    selectedResource.IsMarked = true;
-                    resourcesToFind.Remove(selectedResource.Type);
-                    _unitManager.ResourceOrders(unit,construct,selectedResource);
+                    var selectedResource =
+                        _unitManager.SelectResourceByDistance(rube, _resourceManager.GetResources(resourcesToFind[0]));
+                    resourcesToFind.RemoveAt(0);
+                    _unitManager.ResourceOrders(rube, construct, selectedResource);
                 }
             }
         }

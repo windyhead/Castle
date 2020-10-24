@@ -1,9 +1,7 @@
 ﻿namespace BuildACastle
 {
-
    using UnityEngine.UI;
    using UnityEngine;
-
 
    public class BuildingPanel : MonoBehaviour
    {

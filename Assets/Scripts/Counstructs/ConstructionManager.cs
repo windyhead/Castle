@@ -7,24 +7,25 @@
     {
         public Action<UnitsNumber[], Vector3> OnHutConstructed;
         [SerializeField] private ObjectsLibrary _objectsLibrary = default;
-        
+
         private Construct _newConstruct;
-        
+
         public void CreateStartingConstructs(ConstructNumber[] constructNumbers)
         {
             foreach (var startingConstruct in constructNumbers)
-                foreach (var construct in _objectsLibrary.ConstructStats)
-                    if (startingConstruct.Type == construct.Type)
-                        for (int i = 0; i < startingConstruct.Number; i++)
-                            CreateConstruct(construct);
+            foreach (var construct in _objectsLibrary.ConstructStats)
+                if (startingConstruct.Type == construct.Type)
+                    for (int i = 0; i < startingConstruct.Number; i++)
+                        CreateConstruct(construct);
         }
 
         private void CreateConstruct(ConstructStats constructStats)
         {
+            Debug.Log("Created");
             Construct newConstruct = Instantiate(constructStats.prefab);
             newConstruct.Init(constructStats);
             newConstruct.FinishConstruction();
-            FinishConstruction(newConstruct);
+            ConstructionFinished(newConstruct);
         }
 
         public void CreateBlueprint(ConstructType type)
@@ -44,21 +45,20 @@
 
             _newConstruct = Instantiate(constructStats.prefab, this.transform.position, Quaternion.identity);
             _newConstruct.Init(constructStats);
-            _newConstruct.OnConstructionFinished += FinishConstruction;
+            _newConstruct.OnConstructionFinished += ConstructionFinished;
         }
 
-        public void UpdateBlueprintPosition(Vector3 newPosition)=>
+        public void UpdateBlueprintPosition(Vector3 newPosition) =>
             _newConstruct.transform.position = newPosition;
-        
 
-        public void UpdateBlueprintRotation(Vector3 rotationPoint)=>_newConstruct.transform.LookAt
+
+        public void UpdateBlueprintRotation(Vector3 rotationPoint) => _newConstruct.transform.LookAt
             (new Vector3(rotationPoint.x, _newConstruct.transform.position.y, rotationPoint.z));
-        
-        
-        private void FinishConstruction(Construct construct)
+
+
+        private void ConstructionFinished(Construct construct)
         {
-            OnHutConstructed?.Invoke(construct.Stats.Spawn.ToArray(), construct.transform.position); 
-            construct.OnConstructionFinished -= FinishConstruction;
+            OnHutConstructed?.Invoke(construct.Stats.Spawn.ToArray(), construct.transform.position);
         }
     }
 }
